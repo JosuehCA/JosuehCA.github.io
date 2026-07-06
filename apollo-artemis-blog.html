@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Apollo + Artemis + Tailscale + ESP32 — Play PC games from anywhere</title>
+  <meta name="description" content="A portfolio blog about building a low-latency remote gaming setup with Apollo, Artemis, Tailscale, and an ESP32 Wake-on-LAN bridge." />
+  <style>
+    :root{--bg:#0b1020;--bg2:#101a36;--card:rgba(255,255,255,.08);--card-solid:#121a33;--text:#eef4ff;--muted:#a8b3d6;--accent:#7dd3fc;--accent2:#a78bfa;--border:rgba(255,255,255,.12);--shadow:0 18px 50px rgba(0,0,0,.35);--radius:26px;--max:1120px;--link:#9ee7ff}
+    [data-theme="light"]{--bg:#f5f7fb;--bg2:#eef2ff;--card:rgba(255,255,255,.80);--card-solid:#ffffff;--text:#152033;--muted:#5e6c87;--accent:#0066ff;--accent2:#7c3aed;--border:rgba(21,32,51,.10);--shadow:0 16px 40px rgba(22,31,45,.08);--link:#0057d8}
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top left, rgba(125,211,252,.16), transparent 28%),radial-gradient(circle at top right, rgba(167,139,250,.14), transparent 30%),linear-gradient(180deg,var(--bg),var(--bg2))}
+    a{color:var(--link)}
+    .progress{position:fixed;top:0;left:0;width:0%;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:1000}
+    .shell{width:min(var(--max), calc(100% - 28px));margin:0 auto;padding:24px 0 56px}
+    .hero{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:34px;background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));box-shadow:var(--shadow);backdrop-filter:blur(12px);padding:28px}
+    .hero::before{content:"";position:absolute;inset:-30%;background:radial-gradient(circle at 20% 20%, rgba(125,211,252,.20), transparent 22%),radial-gradient(circle at 85% 15%, rgba(167,139,250,.18), transparent 24%);pointer-events:none}
+    .hero-inner{position:relative;display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:start}
+    .badge{display:inline-flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;border:1px solid rgba(125,211,252,.18);background:rgba(125,211,252,.10);color:var(--accent);font-size:.92rem;margin-bottom:18px}
+    h1{margin:0;font-size:clamp(2rem,5vw,4.5rem);line-height:1.02;letter-spacing:-.04em}
+    .subtitle{margin:14px 0 0;color:var(--muted);font-size:clamp(1rem,2.1vw,1.14rem);line-height:1.8;max-width:70ch}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .btn{appearance:none;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 16px;border-radius:999px;background:rgba(255,255,255,.08);color:var(--text);text-decoration:none;font-weight:650;border:1px solid var(--border);transition:transform .2s ease, background .2s ease, border-color .2s ease}
+    .btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2)}
+    .btn.primary{background:linear-gradient(135deg, rgba(125,211,252,.20), rgba(167,139,250,.18))}
+    .hero-card{border:1px solid var(--border);border-radius:28px;background:var(--card);padding:22px;box-shadow:0 10px 24px rgba(0,0,0,.10)}
+    .hero-card h2{margin:0 0 10px;font-size:1.1rem;letter-spacing:-.02em}
+    .hero-card p,.hero-card li{color:var(--muted);line-height:1.75;margin:0}
+    .hero-card ul{margin:12px 0 0;padding-left:18px;display:grid;gap:8px}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px;align-items:start;margin-top:24px;}
+    article{border:1px solid var(--border);border-radius:34px;background:var(--card);box-shadow:var(--shadow);padding:28px;backdrop-filter:blur(12px)}
+    article h2{margin:28px 0 12px;font-size:clamp(1.35rem,2.5vw,2rem);letter-spacing:-.03em}
+    article h3{margin:22px 0 10px;font-size:1.08rem}
+    p, li{font-size:1.03rem;line-height:1.85}
+    .lead{font-size:1.1rem;line-height:1.9;color:var(--text)}
+    .figure{margin:22px 0;border-radius:24px;border:1px dashed rgba(125,211,252,.38);background:rgba(255,255,255,.03);min-height:180px;padding:18px;display:grid;place-items:center;text-align:center;color:var(--muted)}
+    .figure strong{display:block;color:var(--text);margin-bottom:6px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+    .tile{border:1px solid var(--border);background:var(--card-solid);border-radius:22px;padding:18px}
+    .tile strong{display:block;font-size:1.02rem;margin-bottom:8px}
+    .tile span,.tile p{color:var(--muted);margin:0;line-height:1.7}
+    .timeline{display:grid;gap:12px;margin:18px 0}
+    .step{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--border);border-radius:18px;padding:14px 16px;background:rgba(255,255,255,.04)}
+    .dot{width:12px;height:12px;border-radius:999px;margin-top:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));flex:0 0 auto}
+    pre{overflow:auto;border-radius:22px;border:1px solid var(--border);background:rgba(0,0,0,.22);padding:18px;font-size:.96rem;line-height:1.65}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    .toc{position:sticky;top:18px;border:1px solid var(--border);border-radius:30px;background:var(--card);box-shadow:var(--shadow);padding:18px;display:grid;gap:8px;backdrop-filter:blur(12px)}
+    .toc h3{margin:0 0 4px;font-size:1rem;letter-spacing:-.02em}
+    .toc a{text-decoration:none;color:var(--muted);padding:10px 12px;border-radius:14px;transition:background .2s ease,color .2s ease}
+    .toc a:hover,.toc a.active{background:rgba(125,211,252,.12);color:var(--text)}
+    .footer{margin-top:32px;color:var(--muted);font-size:.95rem;line-height:1.7;border-top:1px solid var(--border);padding-top:16px}
+    .floating{position:fixed;right:18px;bottom:18px;z-index:1001;display:flex;flex-direction:column;gap:10px}
+    .fab{width:48px;height:48px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.10);color:var(--text);cursor:pointer;box-shadow:var(--shadow)}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity .5s ease, transform .5s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    @media (max-width: 980px){.hero-inner,.layout{grid-template-columns:1fr}.toc{position:static}}
+    @media (max-width: 640px){.shell{width:min(var(--max), calc(100% - 16px));padding-top:12px}.hero,.shell-top,article,.toc{border-radius:24px}.hero{padding:18px}article{padding:20px}.grid-2{grid-template-columns:1fr}.shell-top{flex-direction:column;align-items:flex-start}}
+    /* Tames the image and keeps it responsive */
+    .figure img {max-width: 100%;height: auto;border-radius: 12px;box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);margin-top: 12px;display: block;}
+    .figure {max-width: 500px;margin: 22px auto;}
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <div class="badge">Apollo · Artemis · Tailscale · ESP32</div>
+          <h1>Playing my PC games from anywhere</h1>
+          <p class="subtitle">This started as a simple "what if I could play from the beach house?" idea and snowballed into an ecosystem I never expected: self-hosted streaming, secure mesh networking, and even an ESP32 to handle remote wake-up requests.</p>
+          <div class="actions">
+            <a class="btn" href="index.html">Back to Hub</a>
+            <a class="btn primary" href="apollo-artemis-original.pdf" target="_blank">Read the Original PDF</a>
+            <button class="btn" id="copyLink" type="button">Copy page link</button>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <h2>Project Overview</h2>
+          <p>The goal was to play heavy, demanding PC games on my Retroid Pocket 5 over the internet, without unacceptable input lag and without paying for cloud subscriptions.</p>
+          <ul>
+            <li><strong>Host/Client Streaming:</strong> Sunshine & Moonlight (specifically the Apollo & Artemis forks).</li>
+            <li><strong>Mesh Networking:</strong> Tailscale for zero-trust remote access outside my LAN.</li>
+            <li><strong>Hardware Relay:</strong> An ESP32 microchip to send Wake-on-LAN magic packets when my PC is asleep.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <div class="layout">
+      <article id="article">
+        
+        <section class="reveal" id="the-idea">
+          <h2>1. The beach-house idea</h2>
+          <p class="lead">After spending a week at my family's yearly beach house rental, I asked myself: what if I could play my PC games from here? What if, better yet, I could control it, with very little latency, from anywhere with decent internet?</p>
+          <p>I had just gotten a brand new Retroid Pocket 5 (RP5), and I was amazed by how I could play almost every game I wanted from retro consoles on the go. But then something came to my mind: what if I want to play very demanding games? Games that even this device wouldn't run hardware-wise?</p>
+          <p>I knew streaming services were a thing, but the input lag for some of them was just not acceptable, namely, shooters. There also was the whole service subscription thing I preferred not to indulge in. Turns out, these games I could run on my desktop PC no problem. Could I, somehow, play all of them from my RP5, coming from the PC itself?</p>
+          <div class="figure reveal"><div><strong>RP5 Setup</strong><span><img src="RP5.jpeg" alt="Picture of my RP5 showing the main apps I use, like the Artemis client, Tailscale, and a UDP-TCP Rest Network tester app"></span></div></div>
+        </section>
+
+        <section class="reveal" id="apollo-artemis">
+          <h2>2. Getting the Host and Client Right</h2>
+          <p>My research began, and deep down the rabbit hole of host-client streaming software, I found out about Sunshine. What Sunshine brought to the table was self-hosted game streaming using the GPU's encoder directly to pack up and send the game capture, which meant an immense speedup.</p>
+          <p>To connect to it, Moonlight was the perfect match, using NVIDIA's GameStream protocol engineered specifically for ultra-low latency. But I didn't stop at the base software; I dug into the repository forks.</p>
+          
+          <div class="grid-2">
+            <div class="tile">
+              <strong>Apollo (Host)</strong>
+              <span>A Sunshine fork. It allows me to stream into the native resolution of the client device using a built-in virtual display driver (SudoVDA).</span>
+            </div>
+            <div class="tile">
+              <strong>Artemis (Client)</strong>
+              <span>A Moonlight fork designed by the Apollo team. Completely automatic virtual display configuration, two-way clipboard, and better mouse emulation.</span>
+            </div>
+          </div>
+          
+          <p>This setup works great. You can't even tell you're streaming. I dug through blogs and YouTube videos to push the configurations, tuning the <code>1080p</code> default down to <code>720p</code> if the network was unstable, and capping the bitrate around <code>20.0 Mbps</code> depending on the connection.</p>
+        </section>
+
+        <section class="reveal" id="tailscale">
+          <h2>3. Bypassing the LAN with Tailscale</h2>
+          <p>I could finally play any game I have on my PC from another room. But I wanted more: what if I could play from anywhere? I was limited by my LAN. I knew about port forwarding, but that was not good enough in terms of security—I didn't want a port open 24/7.</p>
+          <p>To my surprise, I didn't know about Tailscale before this. What it means is that we can have a cluster of our registered devices, and by using identity-based access, Zero Trust networking, and WireGuard encryption, we interconnect all of them in an extremely reliable way.</p>
+          
+          <div class="timeline">
+            <div class="step"><span class="dot"></span><div><strong>Private Mesh Addresses</strong><br><span class="small">Tailscale assigns IPv4 addresses not reachable from outside our private "Tailnet".</span></div></div>
+            <div class="step"><span class="dot"></span><div><strong>Interconnectivity</strong><br><span class="small">The PC and RP5 can talk to one another securely as if they were on the same local network.</span></div></div>
+            <div class="step"><span class="dot"></span><div><strong>The Result</strong><br><span class="small">An actual way to stream over the internet, using my desktop PC whenever I want, wherever I want.</span></div></div>
+          </div>
+        </section>
+
+        <section class="reveal" id="esp32-relay">
+          <h2>4. The Sleeping PC and the ESP32</h2>
+          <p>There was just one tiny detail: what if my PC is in sleep mode? These services stop when the PC is asleep.</p>
+          <p>There are requests called WoL (Wake on LAN) that devices can send to one another within the same network to wake up a receiving device. It's just a payload with 6 bytes of <code>0xFF</code> followed by the target device's MAC address, repeated 16 times.</p>
+          <pre><code>FFFFFFFFFFFF
+XX:XX:XX:XX:XX:XX
+... (16 times)</code></pre>
+          <p>That fixes waking up the PC locally. But isn't the whole point not being in the same network? Could we use this WoL request remotely?</p>
+          <p>I worked with what I got: an ESP32 I got back in high school for a subject called Intelligent Systems. By registering our ESP32 as a node inside our Tailnet, embedding code that sends magic packets, and connecting it to the same local network as the PC, we bypass the LAN limitation.</p>
+          <p>Now, whenever I want to wake up my PC remotely, I just send a UDP message to the ESP32 through the Tailscale network on port 9999. The listener picks up the request, sends the magic packet to my PC locally, fires up Apollo and Tailscale, and Artemis connects.</p>
+          <div class="figure reveal"><div><strong>ESP32 setup</strong><span><img src="ESP32.jpeg" alt="Picture of the ESP32 I use showing how it's plugged into a normal cellphone charging cube."></span></div></div>
+        </section>
+
+        <section class="reveal" id="conclusion">
+          <h2>Conclusion</h2>
+          <p>After I got this working I installed the Artemis client onto my MacBook, and since everything was already dealt with, I could just use my PC remotely there too. All of this couldn't have been possible had my family not rented a beach house for 1 month which made me think "hey, it would be cool if I could play my PC games from here".</p>
+          <p>The knowledge gained can be extrapolated into a whole bunch of other use cases, and the network concepts are very valuable, too. I had a fun time getting to know all these pieces of software and hardware, and how they interacted with one another.</p>
+          <p>It's also safe to say that by streaming the PC we're not just bound to playing: we can use the PC however we want, which just adds up to the amazing benefits of running this ecosystem.</p>
+          
+          <p class="footer">For the complete, unedited technical write-up, you can read the <a href="apollo-artemis-original.pdf" target="_blank">original PDF version here</a>.</p>
+        </section>
+      </article>
+
+      <aside class="toc reveal" id="toc">
+        <h3>On this page</h3>
+        <a href="#the-idea">1. The beach-house idea</a>
+        <a href="#apollo-artemis">2. Getting the Host and Client Right</a>
+        <a href="#tailscale">3. Bypassing the LAN</a>
+        <a href="#esp32-relay">4. The ESP32 Relay</a>
+        <a href="#conclusion">Conclusion</a>
+      </aside>
+    </div>
+  </main>
+
+  <div class="floating">
+    <button class="fab" id="themeToggle" type="button" aria-label="Toggle theme">◐</button>
+    <button class="fab" id="backToTop" type="button" aria-label="Back to top">↑</button>
+  </div>
+
+  <script>
+    const progress = document.getElementById('progress');
+    const backToTop = document.getElementById('backToTop');
+    const copyLink = document.getElementById('copyLink');
+    const themeToggle = document.getElementById('themeToggle');
+    const revealEls = document.querySelectorAll('.reveal');
+    const tocLinks = [...document.querySelectorAll('.toc a')];
+    const headings = [...document.querySelectorAll('article section[id]')];
+
+    function updateProgress(){
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      progress.style.width = `${pct}%`;
+      backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+    }
+
+    function onScroll(){
+      updateProgress();
+      revealEls.forEach(el => {
+        const top = el.getBoundingClientRect().top;
+        if(top < window.innerHeight - 80) el.classList.add('visible');
+      });
+      let current = '';
+      headings.forEach(sec => {
+        const rect = sec.getBoundingClientRect();
+        if(rect.top <= 120) current = sec.id;
+      });
+      tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+    }
+
+    window.addEventListener('scroll', onScroll);
+    window.addEventListener('load', () => {
+      onScroll();
+      document.body.dataset.theme = localStorage.getItem('theme') || 'dark';
+      themeToggle.textContent = document.body.dataset.theme === 'light' ? '◑' : '◐';
+    });
+
+    backToTop.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+    copyLink.addEventListener('click', async () => {
+      const url = window.location.href;
+      try{
+        await navigator.clipboard.writeText(url);
+        copyLink.textContent = 'Copied!';
+        setTimeout(() => copyLink.textContent = 'Copy page link', 1200);
+      }catch{
+        window.prompt('Copy this link:', url);
+      }
+    });
+
+    themeToggle.addEventListener('click', () => {
+      const next = document.body.dataset.theme === 'light' ? 'dark' : 'light';
+      document.body.dataset.theme = next;
+      localStorage.setItem('theme', next);
+      themeToggle.textContent = next === 'light' ? '◑' : '◐';
+    });
+  </script>
+</body>
+</html>
