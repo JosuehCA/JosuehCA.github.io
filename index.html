@@ -1,82 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Josueh Cabrera — Software Engineer</title>
-  <meta name="description" content="Portfolio of Josueh Cabrera, Software Engineering student and competitive programmer." />
+  <meta name="description"
+    content="Portfolio of Josueh Cabrera, Software Engineering student and competitive programmer." />
   <style>
     :root {
-      --bg: #0b1020; --bg2: #0f1730; --card: rgba(255,255,255,.05); 
-      --border: rgba(255,255,255,.12); --text: #eef4ff; --muted: #a8b3d6; 
-      --accent: #7dd3fc; --accent2: #a78bfa; --shadow: 0 20px 50px rgba(0,0,0,.35);
+      --bg: #0b1020;
+      --bg2: #0f1730;
+      --card: rgba(255, 255, 255, .05);
+      --border: rgba(255, 255, 255, .12);
+      --text: #eef4ff;
+      --muted: #a8b3d6;
+      --accent: #7dd3fc;
+      --accent2: #a78bfa;
+      --shadow: 0 20px 50px rgba(0, 0, 0, .35);
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      margin: 0; min-height: 100vh; color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
       font-family: Inter, system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at top left, rgba(125,211,252,.12), transparent 35%),
-                  radial-gradient(circle at top right, rgba(167,139,250,.10), transparent 35%),
-                  linear-gradient(180deg, var(--bg), var(--bg2));
+      background: radial-gradient(circle at top left, rgba(125, 211, 252, .12), transparent 35%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, .10), transparent 35%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
       line-height: 1.6;
     }
-    .wrap { width: min(1000px, calc(100% - 40px)); margin: 0 auto; padding: 60px 0; }
-    
-    /* Header / About Section */
-    header { margin-bottom: 40px; }
-    h1 { margin: 0; font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: -0.03em; line-height: 1.1; }
-    .location { color: var(--accent); font-weight: 500; margin-top: 12px; display: inline-block; border: 1px solid rgba(125,211,252,.2); padding: 4px 12px; border-radius: 99px; font-size: 0.9rem; background: rgba(125,211,252,.05); }
-    .bio { margin: 24px 0 0; color: var(--muted); font-size: 1.15rem; max-width: 65ch; line-height: 1.8; }
-    .bio strong { color: var(--text); font-weight: 600; }
-    
-    /* Buttons */
-    .actions { display: flex; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
-    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid var(--border); color: var(--text); background: var(--card); }
-    .btn:hover { background: rgba(255,255,255,.1); transform: translateY(-2px); }
-    .btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
-    .btn.primary:hover { background: #dbeafe; transform: translateY(-2px); }
-    
-    /* Project Layout */
-    .section-title { font-size: 1.5rem; margin: 60px 0 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-    .project-card { border: 1px solid var(--border); border-radius: 16px; padding: 32px; background: rgba(255,255,255,.02); box-shadow: var(--shadow); }
-    .project-card h3 { margin: 0 0 12px; font-size: 1.4rem; }
-    .project-card p { color: var(--muted); margin: 0 0 24px; max-width: 70ch; }
-    
-    .tech-stack { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-    .tech-tag { font-size: 0.85rem; padding: 4px 10px; border-radius: 4px; background: rgba(255,255,255,.08); color: #d1d5db; }
-    
-    .project-links { display: flex; gap: 12px; flex-wrap: wrap; }
-    .project-links .btn { font-size: 0.95rem; padding: 10px 16px; }
+
+    .wrap {
+      width: min(1000px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 60px 0;
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .location {
+      color: var(--accent);
+      font-weight: 500;
+      margin-top: 12px;
+      display: inline-block;
+      border: 1px solid rgba(125, 211, 252, .2);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.9rem;
+      background: rgba(125, 211, 252, .05);
+    }
+
+    .bio {
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: 1.15rem;
+      max-width: 65ch;
+      line-height: 1.8;
+    }
+
+    .bio strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--card);
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, .1);
+      transform: translateY(-2px);
+    }
+
+    .btn.primary {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    .btn.primary:hover {
+      background: #dbeafe;
+      transform: translateY(-2px);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin: 60px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      background: rgba(255, 255, 255, .02);
+      box-shadow: var(--shadow);
+    }
+
+    .project-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.4rem;
+    }
+
+    .project-card p {
+      color: var(--muted);
+      margin: 0 0 24px;
+      max-width: 70ch;
+    }
+
+    .tech-stack {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .tech-tag {
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, .08);
+      color: #d1d5db;
+    }
+
+    .project-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .project-links .btn {
+      font-size: 0.95rem;
+      padding: 10px 16px;
+    }
 
     @media (max-width: 600px) {
-      .wrap { padding: 40px 0; }
-      .project-card { padding: 24px; }
+      .wrap {
+        padding: 40px 0;
+      }
+
+      .project-card {
+        padding: 24px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    
+
     <header>
       <h1>Josueh Cabrera</h1>
       <div class="location">📍 Mérida, Yucatán, México</div>
       <p class="bio">
-        I am an ninth-semester <strong>Software Engineering student</strong> at Universidad Autónoma de Yucatán. I spend my time competing in algorithmic programming 
-        (ICPC National/Latin American Finalist), learning about penetration testing, and reverse-engineering various different projects, among other things. I like figuring out 
-        how complex systems work from the ground up, and learning while improving every day is what motivates me the most. I also love learning new languages, playing
+        I am an ninth-semester <strong>Software Engineering student</strong> at Universidad Autónoma de Yucatán. I spend
+        my time competing in algorithmic programming
+        (ICPC National/Latin American Finalist), learning about penetration testing, and reverse-engineering various
+        different projects, among other things. I like figuring out
+        how complex systems work from the ground up, and learning while improving every day is what motivates me the
+        most. I also love learning new languages, playing
         the keyboard, reading, and playing videogames.
       </p>
       <div class="actions">
-        <a class="btn primary" href="resume.html">View Full Resume</a>
+        <a class="btn primary" href="resume.html">View Resume</a>
         <a class="btn" href="mailto:josuemago2012@gmail.com">Contact Me</a>
       </div>
     </header>
 
     <h2 class="section-title">Featured Project</h2>
-    
+
     <article class="project-card">
       <h3>Remote Gaming Architecture: Bypassing LAN Limitations</h3>
-      
+
       <div class="tech-stack">
         <span class="tech-tag">Apollo & Artemis</span>
         <span class="tech-tag">Tailscale (Mesh Networking)</span>
@@ -85,7 +212,11 @@
       </div>
 
       <p>
-        What started as a simple idea—wanting to play my desktop PC games from a beach house on my Retroid Pocket 5—turned into a deep dive into host-client streaming software. To achieve ultra-low latency without relying on cloud subscriptions, I built a self-hosted ecosystem. The setup uses Apollo and Artemis for native-resolution streaming, Tailscale to establish a secure private mesh network, and an ESP32 microchip programmed to route Wake-on-LAN magic packets locally to my sleeping PC from anywhere in the world.
+        What started as a simple idea—wanting to play my desktop PC games from a beach house on my Retroid Pocket
+        5—turned into a deep dive into host-client streaming software. To achieve ultra-low latency without relying on
+        cloud subscriptions, I built a self-hosted ecosystem. The setup uses Apollo and Artemis for native-resolution
+        streaming, Tailscale to establish a secure private mesh network, and an ESP32 microchip programmed to route
+        Wake-on-LAN magic packets locally to my sleeping PC from anywhere in the world.
       </p>
 
       <div class="project-links">
@@ -96,4 +227,5 @@
 
   </div>
 </body>
+
 </html>
