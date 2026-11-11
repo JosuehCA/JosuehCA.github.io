@@ -33,8 +33,31 @@ body {
   padding: 60px 0 80px;
 }
 
-header {
+/* Header & Avatar Layout */
+.hero-header {
   margin-bottom: 50px;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 36px;
+}
+
+.hero-text {
+  flex: 1;
+}
+
+.hero-avatar img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(125, 211, 252, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+  display: block;
 }
 
 h1 {
@@ -220,7 +243,7 @@ h1 {
   padding: 9px 16px;
 }
 
-/* Contest timeline styling */
+/* Contest Timeline Styling */
 .contest-track {
   display: grid;
   gap: 16px;
@@ -243,6 +266,43 @@ h1 {
   font-size: 0.98rem;
   color: var(--muted);
   line-height: 1.6;
+}
+
+/* Contest Photo Gallery (3-Column Layout) */
+.contest-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.gallery-item {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.03);
+}
+
+.gallery-item span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 10px 12px;
+  line-height: 1.4;
+  border-top: 1px solid var(--border);
 }
 
 footer {
@@ -274,6 +334,29 @@ footer a:hover {
   align-items: center;
 }
 
+@media (max-width: 860px) {
+  .contest-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-item img {
+    height: 220px;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero-content {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .hero-avatar img {
+    width: 110px;
+    height: 110px;
+  }
+}
+
 @media (max-width: 640px) {
   .wrap {
     padding: 40px 0 60px;
@@ -283,4 +366,3 @@ footer a:hover {
     padding: 22px;
   }
 }
-
